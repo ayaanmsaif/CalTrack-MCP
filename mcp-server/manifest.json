@@ -1,0 +1,27 @@
+{
+  "manifest_version": "0.2",
+  "name": "caltrack",
+  "version": "1.0.0",
+  "description": "Track your nutrition, through the chatbots you use everyday.",
+  "author": {
+    "name": "ayaan"
+  },
+  "icon": "calTrack.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "ping"
+    }
+  ],
+  "license": "ISC"
+}
