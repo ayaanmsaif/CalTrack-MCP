@@ -21,6 +21,96 @@
   "tools": [
     {
       "name": "ping"
+    },
+    {
+      "name": "log_food_entry"
+    },
+    {
+      "name": "get_meals_today"
+    },
+    {
+      "name": "get_meals_by_date"
+    },
+    {
+      "name": "get_meals_by_date_range"
+    },
+    {
+      "name": "search_meals"
+    },
+    {
+      "name": "update_food_entry"
+    },
+    {
+      "name": "delete_food_entry"
+    },
+    {
+      "name": "create_saved_meal"
+    },
+    {
+      "name": "log_saved_meal"
+    },
+    {
+      "name": "update_saved_meal"
+    },
+    {
+      "name": "delete_saved_meal"
+    },
+    {
+      "name": "search_saved_meals"
+    },
+    {
+      "name": "list_saved_meals"
+    },
+    {
+      "name": "set_profile"
+    },
+    {
+      "name": "set_goals"
+    },
+    {
+      "name": "get_goals"
+    },
+    {
+      "name": "get_goal_progress"
+    },
+    {
+      "name": "get_goal_history"
+    },
+    {
+      "name": "set_calorie_override"
+    },
+    {
+      "name": "set_macro_override"
+    },
+    {
+      "name": "recalculate_targets"
+    },
+    {
+      "name": "log_weight"
+    },
+    {
+      "name": "get_weight_trends"
+    },
+    {
+      "name": "log_water"
+    },
+    {
+      "name": "get_water_today"
+    },
+    {
+      "name": "get_nutrition_summary"
+    },
+    {
+      "name": "get_trends"
+    },
+    {
+      "name": "lookup_barcode"
+    },
+    {
+      "name": "set_timezone"
+    },
+    {
+      "name": "get_profile"
     }
   ],
   "license": "ISC"
