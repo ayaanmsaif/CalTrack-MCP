@@ -15,7 +15,32 @@
       "args": [
         "${__dirname}/dist/index.js"
       ],
-      "env": {}
+      "env": {
+        "SUPABASE_URL": "${user_config.supabase_url}",
+        "SUPABASE_SECRET_KEY": "${user_config.supabase_secret_key}",
+        "CALTRACK_USER_ID": "${user_config.caltrack_user_id}"
+      }
+    }
+  },
+  "user_config": {
+    "supabase_url": {
+      "type": "string",
+      "title": "Supabase URL",
+      "description": "The Supabase project URL, e.g. https://xxxx.supabase.co",
+      "required": true
+    },
+    "supabase_secret_key": {
+      "type": "string",
+      "title": "Supabase Secret Key",
+      "description": "The Supabase service role secret key",
+      "required": true,
+      "sensitive": true
+    },
+    "caltrack_user_id": {
+      "type": "string",
+      "title": "CalTrack User ID",
+      "description": "The Supabase auth.users id this server acts on behalf of",
+      "required": true
     }
   },
   "tools": [
