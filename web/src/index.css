@@ -1,0 +1,178 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-paper: #fafbf7;
+  --color-card: #ffffff;
+  --color-ink: #0d2a1e;
+  --color-ink-2: #43594e;
+  --color-ink-3: #7d8e85;
+  --color-line: #e3e9e2;
+  --color-line-soft: #eef2ec;
+
+  --color-leaf-50: #f1f8f3;
+  --color-leaf-100: #ddf2e4;
+  --color-leaf-200: #bbe4c9;
+  --color-leaf-300: #88d0a3;
+  --color-leaf-400: #47b577;
+  --color-leaf-500: #17914f;
+  --color-leaf-600: #127a42;
+  --color-leaf-700: #0f6337;
+  --color-leaf-800: #0c4d2b;
+  --color-leaf-900: #093b22;
+  --color-leaf-950: #052417;
+
+  --color-lime: #d9f99d;
+
+  /* Macro series — validated all-pairs for CVD + normal vision on white. */
+  --color-protein: #2a78d6;
+  --color-carbs: #eda100;
+  --color-fat: #e87ba4;
+  /* Status (over target) — always paired with an icon + label. */
+  --color-serious: #ec835a;
+
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-marquee: marquee 70s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 70s linear infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-drift: drift 22s ease-in-out infinite;
+  --animate-pulse-dot: pulse-dot 2.4s ease-out infinite;
+
+  @keyframes marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes marquee-reverse {
+    from { transform: translate3d(-50%, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(4%, -5%, 0) scale(1.08); }
+  }
+  @keyframes pulse-dot {
+    0% { box-shadow: 0 0 0 0 rgb(23 145 79 / 0.45); }
+    70%, 100% { box-shadow: 0 0 0 8px rgb(23 145 79 / 0); }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--color-lime);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-leaf-500);
+    outline-offset: 3px;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .range-input {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 22px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .range-input:focus-visible {
+    outline: none;
+  }
+  .range-input::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--color-leaf-500) var(--fill, 0%), var(--color-leaf-100) var(--fill, 0%));
+  }
+  .range-input::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-leaf-100);
+  }
+  .range-input::-moz-range-progress {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-leaf-500);
+  }
+  .range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    margin-top: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--color-leaf-500), 0 4px 10px -2px rgb(13 42 30 / 0.3);
+    transition: transform 0.2s var(--ease-soft), box-shadow 0.2s var(--ease-soft);
+  }
+  .range-input::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--color-leaf-500), 0 4px 10px -2px rgb(13 42 30 / 0.3);
+  }
+  .range-input:active::-webkit-slider-thumb {
+    transform: scale(1.12);
+  }
+  .range-input:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px var(--color-leaf-500), 0 0 0 7px rgb(23 145 79 / 0.2);
+  }
+  .range-input:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 2px var(--color-leaf-500), 0 0 0 7px rgb(23 145 79 / 0.2);
+  }
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 7%, black 93%, transparent);
+}
+
+@utility shimmer-bg {
+  background-image: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.7) 50%, transparent 100%);
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-drift,
+  .animate-shimmer,
+  .animate-pulse-dot {
+    animation: none !important;
+  }
+}

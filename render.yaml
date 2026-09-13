@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: caltrack
+    runtime: node
+    plan: free
+    # One service: the Vite site (landing + dashboard) is built first, then the
+    # MCP/OAuth server, which serves web/dist alongside its own routes.
+    buildCommand: npm ci --prefix web && npm run build --prefix web && npm ci --prefix mcp-server && npm run build --prefix mcp-server
+    startCommand: npm run start:http --prefix mcp-server
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: BASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
