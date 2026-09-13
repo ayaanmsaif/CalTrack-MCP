@@ -68,6 +68,7 @@ input:focus{box-shadow:0 0 0 2px var(--leaf)}
 .msg-error{background:#fdf0ea}
 .msg-notice{background:var(--leaf50);box-shadow:0 0 0 1px var(--leaf100)}
 .hint{margin:14px 0 0;color:var(--ink3);font-size:13px;line-height:1.5}
+.hint a{color:var(--leaf);font-weight:500;text-decoration:underline;text-underline-offset:2px}
 .account{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--paper);font-size:14px;color:var(--ink2);margin:0 0 20px;overflow:hidden}
 .account span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .avatar{display:grid;place-items:center;width:28px;height:28px;border-radius:999px;background:var(--leaf100);color:#0c4d2b;font-weight:600;font-size:13px;flex-shrink:0}
@@ -217,6 +218,9 @@ ${notice ? `<div class="msg msg-notice" role="status">${escapeHtml(notice)}</div
     authorizeUrl.searchParams.set("redirect_to", `${opts.baseUrl}/auth/google/callback`);
     authorizeUrl.searchParams.set("code_challenge", code_challenge);
     authorizeUrl.searchParams.set("code_challenge_method", "s256");
+    // Supabase forwards this to Google, which then always shows its account
+    // chooser rather than silently reusing the browser's signed-in account.
+    authorizeUrl.searchParams.set("prompt", "select_account");
 
     res.redirect(authorizeUrl.toString());
   });
@@ -341,7 +345,8 @@ ${email ? `<div class="account"><span class="avatar">${escapeHtml(email.charAt(0
 <button class="btn btn-secondary" type="submit" name="decision" value="deny">Deny</button>
 <button class="btn btn-primary" type="submit" name="decision" value="approve">Allow</button>
 </div>
-</form>`
+</form>
+<p class="hint">Not you? <a href="/login?txn=${encodeURIComponent(txn.id)}">Use a different account</a></p>`
       )
     );
   });

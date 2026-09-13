@@ -90,7 +90,10 @@ export function SignIn() {
     setBusy("google");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/app` },
+      // select_account makes Google show its account chooser every time,
+      // instead of silently reusing whichever Google account the browser
+      // is already signed in to (which made switching accounts impossible).
+      options: { redirectTo: `${window.location.origin}/app`, queryParams: { prompt: "select_account" } },
     });
     if (error) {
       setError(error.message);
