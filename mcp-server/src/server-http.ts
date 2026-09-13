@@ -52,7 +52,7 @@ app.use(
   })
 );
 
-// The login/consent page and its routes (Google + email/password).
+// The login/consent page and its routes (Google + GitHub sign-in).
 app.use(createLoginRouter(supabase, { baseUrl: BASE_URL, sessionSecret: SESSION_SECRET, supabaseUrl: SUPABASE_URL, supabaseAnonKey: SUPABASE_ANON_KEY }));
 
 function resolveHttpUserId(extra: ToolExtra): string {

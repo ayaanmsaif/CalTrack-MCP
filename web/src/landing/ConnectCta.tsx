@@ -51,7 +51,7 @@ export function ConnectCta() {
       title: "Sign in, then say what you ate",
       body: (
         <p>
-          Use Google or email. Then try something like <span className="text-white">“porridge with a banana for breakfast”</span>.
+          Use Google or GitHub. Then try something like <span className="text-white">“porridge with a banana for breakfast”</span>.
         </p>
       ),
     },

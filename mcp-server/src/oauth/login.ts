@@ -1,5 +1,5 @@
 import { Router, urlencoded, type Request, type Response } from "express";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import pkceChallenge from "pkce-challenge";
 import { randomToken, verifySignedValue } from "./crypto.js";
 
@@ -37,6 +37,8 @@ const LOGO = `<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"
 
 const GOOGLE = `<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.46a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.58-5.17 3.58-8.81Z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.88-3.02c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.11A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.27 14.27A7.2 7.2 0 0 1 4.9 12c0-.79.14-1.55.37-2.27V6.62H1.26A12 12 0 0 0 0 12c0 1.94.46 3.77 1.26 5.38l4.01-3.11Z"/><path fill="#EA4335" d="M12 4.77c1.77 0 3.35.61 4.6 1.8l3.44-3.44A11.5 11.5 0 0 0 12 0 12 12 0 0 0 1.26 6.62l4.01 3.11C6.22 6.88 8.87 4.77 12 4.77Z"/></svg>`;
 
+const GITHUB = `<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>`;
+
 const TICK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`;
 
 const CSS = `
@@ -53,20 +55,15 @@ h1 em{font-style:italic;color:var(--leaf)}
 .sub{color:var(--ink2);font-size:15px;line-height:1.55;margin:0 0 24px}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:48px;border-radius:999px;border:0;font:inherit;font-size:15px;font-weight:500;cursor:pointer;text-decoration:none;transition:background-color .2s,box-shadow .2s,transform .1s}
 .btn:active{transform:scale(.985)}
-.btn-google,.btn-secondary{background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--line)}
-.btn-google:hover,.btn-secondary:hover{box-shadow:0 0 0 1px #c5cfc6}
+.btn-provider,.btn-secondary{background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.btn-provider:hover,.btn-secondary:hover{box-shadow:0 0 0 1px #c5cfc6}
+.providers{display:grid;gap:10px}
 .btn-primary{background:var(--ink);color:#fff}
 .btn-primary:hover{background:#0c4d2b}
-.divider{display:flex;align-items:center;gap:12px;color:var(--ink3);font-size:13px;margin:20px 0}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
 form{display:grid;gap:10px}
-input{width:100%;height:48px;padding:0 16px;border:0;border-radius:16px;background:#fff;box-shadow:0 0 0 1px var(--line);font:inherit;font-size:15px;color:var(--ink);outline:none;transition:box-shadow .2s}
-input::placeholder{color:var(--ink3)}
-input:focus{box-shadow:0 0 0 2px var(--leaf)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
 .msg{padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.45;margin:0 0 16px}
 .msg-error{background:#fdf0ea}
-.msg-notice{background:var(--leaf50);box-shadow:0 0 0 1px var(--leaf100)}
 .hint{margin:14px 0 0;color:var(--ink3);font-size:13px;line-height:1.5}
 .hint a{color:var(--leaf);font-weight:500;text-decoration:underline;text-underline-offset:2px}
 .account{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--paper);font-size:14px;color:var(--ink2);margin:0 0 20px;overflow:hidden}
@@ -111,6 +108,12 @@ const expiredPage = () =>
 
 const errorPage = (message: string) =>
   page("Something went wrong", `<h1>Something went <em>wrong</em>.</h1><p class="sub">${escapeHtml(message)}</p>`);
+
+// Sign-in providers offered on the login page. Each must also be enabled in
+// Supabase (Authentication → Sign In / Providers).
+const PROVIDERS = { google: "Google", github: "GitHub" } as const;
+type ProviderId = keyof typeof PROVIDERS;
+const isProvider = (value: string): value is ProviderId => value === "google" || value === "github";
 
 async function getPendingTxn(req: Request, supabase: SupabaseClient, sessionSecret: string): Promise<LoginTransactionRow | null> {
   const cookie = req.cookies?.ct_txn as string | undefined;
@@ -163,12 +166,6 @@ export function createLoginRouter(supabase: SupabaseClient, opts: LoginRouterOpt
   // would try to re-read an already-consumed request stream on those routes.
   router.use(urlencoded({ extended: true }));
 
-  // Throwaway client for password auth only — no persisted session, this is
-  // a stateless server-rendered flow, not a browser-side Supabase client.
-  const anon = createClient(opts.supabaseUrl, opts.supabaseAnonKey, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-  });
-
   router.get("/login", async (req, res) => {
     const txn = await getPendingTxn(req, supabase, opts.sessionSecret);
     if (!txn) {
@@ -177,60 +174,67 @@ export function createLoginRouter(supabase: SupabaseClient, opts: LoginRouterOpt
     }
 
     const error = typeof req.query.error === "string" ? req.query.error : null;
-    const notice = typeof req.query.notice === "string" ? req.query.notice : null;
-    const txnAttr = escapeHtml(txn.id);
+    const txnParam = encodeURIComponent(txn.id);
 
     res.send(
       page(
         "Sign in",
         `<h1>Sign in to <em>CalTrack</em></h1>
-<p class="sub">Your AI app wants to connect. Use the same account as your CalTrack dashboard.</p>
+<p class="sub">Your AI app wants to connect. Use the same account as your CalTrack dashboard. New here? Signing in creates your account.</p>
 ${error ? `<div class="msg msg-error" role="alert">${escapeHtml(error)}</div>` : ""}
-${notice ? `<div class="msg msg-notice" role="status">${escapeHtml(notice)}</div>` : ""}
-<a class="btn btn-google" href="/auth/google/start?txn=${encodeURIComponent(txn.id)}">${GOOGLE}Continue with Google</a>
-<div class="divider">or with email</div>
-<form method="post" action="/login/password">
-<input type="hidden" name="txn" value="${txnAttr}">
-<input type="email" name="email" placeholder="you@example.com" autocomplete="email" required aria-label="Email">
-<input type="password" name="password" placeholder="Password" autocomplete="current-password" minlength="6" required aria-label="Password">
-<div class="row">
-<button class="btn btn-primary" type="submit">Sign in</button>
-<button class="btn btn-secondary" type="submit" formaction="/login/signup">Create account</button>
+<div class="providers">
+<a class="btn btn-provider" href="/auth/google/start?txn=${txnParam}">${GOOGLE}Continue with Google</a>
+<a class="btn btn-provider" href="/auth/github/start?txn=${txnParam}">${GITHUB}Continue with GitHub</a>
 </div>
-</form>
-<p class="hint">New here? Enter an email and a password, then choose Create account.</p>`
+<p class="hint">CalTrack never sees your Google or GitHub password.</p>`
       )
     );
   });
 
-  router.get("/auth/google/start", async (req, res) => {
+  router.get("/auth/:provider/start", async (req, res) => {
+    const provider = req.params.provider;
+    if (!isProvider(provider)) {
+      res.status(404).send(errorPage("That sign-in option isn't available."));
+      return;
+    }
+
     const txn = await getPendingTxn(req, supabase, opts.sessionSecret);
     if (!txn) {
       res.status(400).send(expiredPage());
       return;
     }
 
+    // Our own PKCE pair for the CalTrack <-> Supabase leg. The column is named
+    // after Google (the first provider) but holds the verifier for any provider.
     const { code_verifier, code_challenge } = await pkceChallenge();
     await supabase.from("oauth_login_transactions").update({ google_code_verifier: code_verifier }).eq("id", txn.id);
 
     const authorizeUrl = new URL(`${opts.supabaseUrl}/auth/v1/authorize`);
-    authorizeUrl.searchParams.set("provider", "google");
-    authorizeUrl.searchParams.set("redirect_to", `${opts.baseUrl}/auth/google/callback`);
+    authorizeUrl.searchParams.set("provider", provider);
+    authorizeUrl.searchParams.set("redirect_to", `${opts.baseUrl}/auth/${provider}/callback`);
     authorizeUrl.searchParams.set("code_challenge", code_challenge);
     authorizeUrl.searchParams.set("code_challenge_method", "s256");
-    // Supabase forwards this to Google, which then always shows its account
-    // chooser rather than silently reusing the browser's signed-in account.
+    // Supabase forwards this to the provider, which then always shows its
+    // account chooser rather than silently reusing the browser's signed-in account.
     authorizeUrl.searchParams.set("prompt", "select_account");
 
     res.redirect(authorizeUrl.toString());
   });
 
-  router.get("/auth/google/callback", async (req, res) => {
+  router.get("/auth/:provider/callback", async (req, res) => {
+    const provider = req.params.provider;
     const txn = await getPendingTxn(req, supabase, opts.sessionSecret);
-    const code = typeof req.query.code === "string" ? req.query.code : null;
-
-    if (!txn || !code || !txn.google_code_verifier) {
+    if (!isProvider(provider) || !txn) {
       res.status(400).send(expiredPage());
+      return;
+    }
+
+    // No code means the person cancelled at Google/GitHub or the provider
+    // refused. Either way, send them back to pick a sign-in option again.
+    const retry = `/login?txn=${encodeURIComponent(txn.id)}&error=${encodeURIComponent(`${PROVIDERS[provider]} sign-in didn't go through. Please try again.`)}`;
+    const code = typeof req.query.code === "string" ? req.query.code : null;
+    if (!code || !txn.google_code_verifier) {
+      res.redirect(retry);
       return;
     }
 
@@ -240,7 +244,6 @@ ${notice ? `<div class="msg msg-notice" role="status">${escapeHtml(notice)}</div
       body: JSON.stringify({ auth_code: code, code_verifier: txn.google_code_verifier }),
     });
 
-    const retry = `/login?txn=${encodeURIComponent(txn.id)}&error=${encodeURIComponent("Google sign-in didn't go through. Please try again.")}`;
     if (!tokenRes.ok) {
       res.redirect(retry);
       return;
@@ -253,53 +256,6 @@ ${notice ? `<div class="msg msg-notice" role="status">${escapeHtml(notice)}</div
     }
 
     await supabase.from("oauth_login_transactions").update({ user_id: session.user.id, status: "authenticated" }).eq("id", txn.id);
-    res.redirect(`/consent?txn=${encodeURIComponent(txn.id)}`);
-  });
-
-  router.post("/login/password", async (req, res) => {
-    const { email, password, txn: txnParam } = req.body as { email?: string; password?: string; txn?: string };
-    const txn = await getPendingTxn(req, supabase, opts.sessionSecret);
-
-    if (!txn || txn.id !== txnParam || !email || !password) {
-      res.status(400).send(expiredPage());
-      return;
-    }
-
-    const { data, error } = await anon.auth.signInWithPassword({ email, password });
-    if (error || !data.user) {
-      res.redirect(`/login?txn=${encodeURIComponent(txn.id)}&error=${encodeURIComponent("That email and password don't match.")}`);
-      return;
-    }
-
-    await supabase.from("oauth_login_transactions").update({ user_id: data.user.id, status: "authenticated" }).eq("id", txn.id);
-    res.redirect(`/consent?txn=${encodeURIComponent(txn.id)}`);
-  });
-
-  router.post("/login/signup", async (req, res) => {
-    const { email, password, txn: txnParam } = req.body as { email?: string; password?: string; txn?: string };
-    const txn = await getPendingTxn(req, supabase, opts.sessionSecret);
-
-    if (!txn || txn.id !== txnParam || !email || !password) {
-      res.status(400).send(expiredPage());
-      return;
-    }
-
-    const { data, error } = await anon.auth.signUp({ email, password });
-    if (error) {
-      res.redirect(`/login?txn=${encodeURIComponent(txn.id)}&error=${encodeURIComponent(error.message)}`);
-      return;
-    }
-
-    if (!data.session || !data.user) {
-      // Supabase's default "confirm your email" requirement — no usable
-      // session yet. Send them back to sign in once they've confirmed.
-      res.redirect(
-        `/login?txn=${encodeURIComponent(txn.id)}&notice=${encodeURIComponent("Check your inbox for a confirmation link, then sign in here.")}`
-      );
-      return;
-    }
-
-    await supabase.from("oauth_login_transactions").update({ user_id: data.user.id, status: "authenticated" }).eq("id", txn.id);
     res.redirect(`/consent?txn=${encodeURIComponent(txn.id)}`);
   });
 

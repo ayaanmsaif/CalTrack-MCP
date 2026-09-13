@@ -101,7 +101,7 @@ function GlanceIllustration() {
 const STEPS = [
   {
     title: "Connect it once",
-    body: "Add CalTrack as a custom connector in Claude or ChatGPT, then sign in with Google or email. It takes about a minute and you only do it once.",
+    body: "Add CalTrack as a custom connector in Claude or ChatGPT, then sign in with Google or GitHub. It takes about a minute and you only do it once.",
     Illustration: ConnectIllustration,
   },
   {

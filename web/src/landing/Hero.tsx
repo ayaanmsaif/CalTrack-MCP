@@ -153,7 +153,7 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.85 }}
             className="mt-6 text-[13.5px] text-ink-3"
           >
-            Nothing to install. Sign in with Google or email.
+            Nothing to install. Sign in with Google or GitHub.
           </motion.p>
         </div>
 
