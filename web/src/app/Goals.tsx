@@ -3,6 +3,7 @@ import { useGoalHistory, useGoals, useLatestWeight, useProfile } from "../lib/qu
 import { displayWeight, fmt1, fmtInt } from "../lib/format";
 import type { Profile } from "../lib/types";
 import { Card, CardHeader, EmptyState, MACROS, PageHeader, PromptChip, Row, Skeleton } from "./components";
+import { AccountData } from "./AccountData";
 
 const GOAL_LABEL = {
   lose_weight: "Lose weight",
@@ -201,6 +202,8 @@ export function Goals() {
           1% of bodyweight, never below 1.2× resting burn). They're not medical advice. To change anything here, just ask your AI.
         </p>
       </div>
+
+      <AccountData />
     </div>
   );
 }

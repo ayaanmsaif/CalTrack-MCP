@@ -211,3 +211,15 @@ export function GitHubIcon({ size = 18 }: { size?: number }) {
     </svg>
   );
 }
+
+export const Download = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" />
+  </Icon>
+);
+
+export const Trash = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 7h16M10 7V5.5A1.5 1.5 0 0 1 11.5 4h1A1.5 1.5 0 0 1 14 5.5V7M6.5 7l.8 12.1a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7M10 11v6M14 11v6" />
+  </Icon>
+);

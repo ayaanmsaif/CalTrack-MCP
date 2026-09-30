@@ -33,7 +33,7 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-const LOGO = `<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#17914f"/><path d="M7 23.2c2.9-.5 5.4-1.3 8-2.7 3.2-1.8 5.8-4.4 8-8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M19.4 10.2 25.6 8l-1.3 6.4z" fill="#fff"/><circle cx="11" cy="22.2" r="2.1" fill="#fff"/><circle cx="18" cy="18.6" r="2.1" fill="#fff"/></svg>`;
+const LOGO = `<img src="/logo.png" alt="" width="26" height="31" style="height:31px;width:auto;display:block">`;
 
 const GOOGLE = `<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.46a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.58-5.17 3.58-8.81Z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.88-3.02c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.11A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.27 14.27A7.2 7.2 0 0 1 4.9 12c0-.79.14-1.55.37-2.27V6.62H1.26A12 12 0 0 0 0 12c0 1.94.46 3.77 1.26 5.38l4.01-3.11Z"/><path fill="#EA4335" d="M12 4.77c1.77 0 3.35.61 4.6 1.8l3.44-3.44A11.5 11.5 0 0 0 12 0 12 12 0 0 0 1.26 6.62l4.01 3.11C6.22 6.88 8.87 4.77 12 4.77Z"/></svg>`;
 
@@ -84,7 +84,7 @@ function page(title: string, body: string): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#fafbf7">
 <title>${escapeHtml(title)} · CalTrack</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">

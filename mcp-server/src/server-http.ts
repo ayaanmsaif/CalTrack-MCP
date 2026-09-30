@@ -9,6 +9,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { mcpAuthRouter, getOAuthProtectedResourceMetadataUrl } from "@modelcontextprotocol/sdk/server/auth/router.js";
 import { requireBearerAuth } from "@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js";
 import { registerTools, type ToolExtra } from "./tools.js";
+import { deleteAccount } from "./account.js";
 import { CalTrackOAuthProvider } from "./oauth/provider.js";
 import { createLoginRouter } from "./oauth/login.js";
 
@@ -97,14 +98,44 @@ app.get("/config.js", (_req, res) => {
   res.type("application/javascript").set("Cache-Control", "no-store").send(`window.__CALTRACK__=${payload};`);
 });
 
+// The dashboard's "delete my account" button. A signed-in browser can clear
+// its own rows under row-level security, but only the service role can remove
+// the sign-in itself, so the whole delete runs here instead.
+app.delete("/api/account", async (req, res) => {
+  const token = req.headers.authorization?.replace(/^Bearer /i, "").trim();
+  if (!token) {
+    res.status(401).json({ error: "Not signed in." });
+    return;
+  }
+
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) {
+    res.status(401).json({ error: "Not signed in." });
+    return;
+  }
+
+  try {
+    await deleteAccount(supabase, data.user.id);
+    res.status(200).json({ deleted: true });
+  } catch (err) {
+    console.error("[caltrack-http] Account delete failed:", err);
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 // Landing page + dashboard (the Vite build in ../../web/dist).
 const WEB_DIST = process.env.WEB_DIST_DIR ?? path.resolve(__dirname, "../../web/dist");
 const WEB_INDEX = path.join(WEB_DIST, "index.html");
 if (fs.existsSync(WEB_INDEX)) {
+  // Link previews (LinkedIn, Slack, iMessage…) only accept absolute URLs, and
+  // a deployment only learns its own address at runtime — so the built HTML
+  // carries a placeholder that gets filled in here, once, at startup.
+  const indexHtml = fs.readFileSync(WEB_INDEX, "utf8").replaceAll("__CALTRACK_ORIGIN__", BASE_URL.replace(/\/+$/, ""));
+
   app.use("/assets", express.static(path.join(WEB_DIST, "assets"), { immutable: true, maxAge: "1y", index: false }));
   app.use(express.static(WEB_DIST, { index: false, maxAge: "1h" }));
   app.get(["/", "/app", "/app/*splat"], (_req, res) => {
-    res.set("Cache-Control", "no-cache").sendFile(WEB_INDEX);
+    res.set("Cache-Control", "no-cache").type("html").send(indexHtml);
   });
 } else {
   console.warn(`[caltrack-http] No web build found at ${WEB_DIST}; the landing page and dashboard won't be served.`);

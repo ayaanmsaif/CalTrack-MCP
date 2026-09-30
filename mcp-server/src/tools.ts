@@ -4,6 +4,7 @@ import type { ServerRequest, ServerNotification } from "@modelcontextprotocol/sd
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { DateTime, IANAZone } from "luxon";
+import { deleteAccount, exportAccountData } from "./account.js";
 
 export type ToolExtra = RequestHandlerExtra<ServerRequest, ServerNotification>;
 export type ResolveUserId = (extra: ToolExtra) => string;
@@ -1525,6 +1526,58 @@ export function registerTools(server: McpServer, supabase: SupabaseClient, resol
           },
         ],
       };
+    }
+  );
+
+  server.registerTool(
+    "export_all_data",
+    {
+      title: "Export All Data",
+      description:
+        "Returns everything stored for this account as JSON: profile, goals, goal history, every food entry with its ingredients, saved meals, and water and weight logs. Use it when someone wants a copy of their data, or before they delete their account.",
+      inputSchema: {},
+      annotations: { readOnlyHint: true },
+    },
+    async (_args, extra) => {
+      const userId = resolveUserId(extra);
+
+      try {
+        const data = await exportAccountData(supabase, userId);
+        const counts = `${data.food_entries.length} food entries, ${data.saved_meals.length} saved meals, ${data.weight_logs.length} weight logs, ${data.water_logs.length} water logs`;
+        return { content: [{ type: "text", text: `Full export (${counts}):\n\n${JSON.stringify(data, null, 2)}` }] };
+      } catch (error) {
+        return { content: [{ type: "text", text: `Error exporting data: ${(error as Error).message}` }], isError: true };
+      }
+    }
+  );
+
+  server.registerTool(
+    "delete_account",
+    {
+      title: "Delete Account",
+      description:
+        'Permanently deletes this account and everything in it: meals, saved meals, weight, water, goals, profile, and every AI app connection. This cannot be undone. Offer export_all_data first, and only call this after the person has clearly confirmed they want it gone. The confirm argument must be exactly "DELETE MY ACCOUNT".',
+      inputSchema: {
+        confirm: z.literal("DELETE MY ACCOUNT").describe('Must be the exact text "DELETE MY ACCOUNT"'),
+      },
+      annotations: { destructiveHint: true, idempotentHint: true, openWorldHint: false },
+    },
+    async (_args, extra) => {
+      const userId = resolveUserId(extra);
+
+      try {
+        await deleteAccount(supabase, userId);
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Account deleted. Every meal, saved meal, weight, water and goal record is gone, along with the sign-in itself. You can remove the CalTrack connector from this app now — it no longer has an account to reach.",
+            },
+          ],
+        };
+      } catch (error) {
+        return { content: [{ type: "text", text: `Error deleting account: ${(error as Error).message}` }], isError: true };
+      }
     }
   );
 }
